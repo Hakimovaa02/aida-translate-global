@@ -315,19 +315,16 @@ async function translateGlobal(text, direction){
   let source = direction === "ru-en" ? "ru" : "en";
   let target = direction === "ru-en" ? "en" : "ru";
 
-  const response = await fetch("https://libretranslate.de/translate", {
-    method: "POST",
-    body: JSON.stringify({
-      q: text,
-      source: source,
-      target: target,
-      format: "text"
-    }),
-    headers: { "Content-Type": "application/json" }
-  });
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`;
 
+  const response = await fetch(url);
   const data = await response.json();
-  return data.translatedText;
+
+  if(data?.responseData?.translatedText){
+    return data.responseData.translatedText;
+  }
+
+  throw new Error("No translation result");
 }
 
 
