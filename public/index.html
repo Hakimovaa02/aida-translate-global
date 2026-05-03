@@ -1,4 +1,3 @@
-<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -16,48 +15,50 @@
 
   <div class="logo-block">
     <h1>AidaTranslate Global</h1>
-    <p class="developer">
-      Developed by Prytkova Aida
-    </p>
+    <p class="developer">Developed by Prytkova Aida</p>
   </div>
 
   <div class="translator-card">
 
     <div class="top-controls">
 
+      <!-- направление перевода -->
       <select id="direction">
         <option value="ru-en">Russian → English</option>
         <option value="en-ru">English → Russian</option>
       </select>
 
-      <select id="englishVariant">
-        <option value="american">🇺🇸 American English</option>
-        <option value="british">🇬🇧 British English</option>
-        <option value="australian">🇦🇺 Australian English</option>
+      <!-- стиль английского (UK / US) -->
+      <select id="style">
+        <option value="uk">🇬🇧 British English</option>
+        <option value="us">🇺🇸 American English</option>
+        <option value="simple">Simple meaning</option>
       </select>
 
     </div>
 
+    <!-- ввод -->
     <textarea
-      id="inputText"
+      id="input"
       placeholder="Enter text..."
     ></textarea>
 
-    <button id="translateBtn">
+    <!-- кнопка -->
+    <button onclick="translateText()">
       Translate
     </button>
 
+    <!-- вывод -->
     <textarea
-      id="outputText"
+      id="output"
       readonly
       placeholder="Translation..."
     ></textarea>
 
     <div class="info-block">
-      <h3>Semantic Translation</h3>
+      <h3>Semantic Translation Engine</h3>
       <p>
-        Supports idioms, semantic understanding
-        and regional English variants.
+        Supports idioms, semantic interpretation and UK/US style switching.
       </p>
     </div>
 
