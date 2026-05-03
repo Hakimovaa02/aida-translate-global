@@ -287,67 +287,67 @@ const idiomsRU_EN = {
 }
 
 };
-// =========================
-// 4. ПОИСК ИДИОМ
-// =========================
+// =====================
+// ИДИОМЫ СНАЧАЛА
+// =====================
 
 function findIdiom(text, style){
 
-  const t = clean(text);
+  const t = text.toLowerCase();
 
   for(let key in idiomsRU_EN){
-
     if(t.includes(key)){
-
-      const val = idiomsRU_EN[key];
-
-      if(typeof val === "object"){
-        return val[style] || val.uk;
-      }
-
-      return val;
+      return idiomsRU_EN[key][style] || idiomsRU_EN[key].uk;
     }
-
   }
 
   return null;
 }
 
 
-// =========================
-// 5. ПЕРЕВОД СЛОВ
-// =========================
+// =====================
+// БЕСПЛАТНЫЙ ПЕРЕВОДЧИК (ВСЕ СЛОВА МИРА)
+// =====================
+// LibreTranslate public API
 
-function translateWords(text, direction){
+async function translateGlobal(text, direction){
 
-  const words = clean(text).split(" ");
+  let source = direction === "ru-en" ? "ru" : "en";
+  let target = direction === "ru-en" ? "en" : "ru";
 
-  const dict = direction === "ru-en" ? dictRU_EN : dictEN_RU;
+  const response = await fetch("https://libretranslate.de/translate", {
+    method: "POST",
+    body: JSON.stringify({
+      q: text,
+      source: source,
+      target: target,
+      format: "text"
+    }),
+    headers: { "Content-Type": "application/json" }
+  });
 
-  return words.map(w => dict[w] || w).join(" ");
+  const data = await response.json();
+  return data.translatedText;
 }
 
 
-// =========================
-// 6. ГЛАВНАЯ ФУНКЦИЯ
-// =========================
+// =====================
+// ГЛАВНАЯ ФУНКЦИЯ
+// =====================
 
-function translateText(){
+async function translateText(){
 
   const input = document.getElementById("input").value;
   const output = document.getElementById("output");
-
-  const direction = document.getElementById("direction").value;
   const style = document.getElementById("style").value;
+  const direction = document.getElementById("direction").value;
 
   if(!input.trim()){
     output.value = "";
     return;
   }
 
-  console.log("Translate started:", input);
-
-  // 1. проверка идиом
+  // 1. ИДИОМЫ (ПРИОРИТЕТ)
   const idiom = findIdiom(input, style);
 
   if(idiom){
@@ -355,9 +355,19 @@ function translateText(){
     return;
   }
 
-  // 2. обычный перевод
-  const result = translateWords(input, direction);
+  // 2. ВСЕ ОСТАЛЬНОЕ (ЛЮБЫЕ СЛОВА В МИРЕ)
+  try {
 
-  output.value = result;
+    output.value = "Translating...";
+
+    const result = await translateGlobal(input, direction);
+
+    output.value = result;
+
+  } catch (e) {
+
+    console.log(e);
+    output.value = "Translation error (API unavailable)";
+  }
 
 }
