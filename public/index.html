@@ -1,0 +1,71 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AidaTranslate Global</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<div class="container">
+
+  <div class="logo-block">
+    <h1>AidaTranslate Global</h1>
+    <p class="developer">
+      Developed by Prytkova Aida
+    </p>
+  </div>
+
+  <div class="translator-card">
+
+    <div class="top-controls">
+
+      <select id="direction">
+        <option value="ru-en">Russian → English</option>
+        <option value="en-ru">English → Russian</option>
+      </select>
+
+      <select id="englishVariant">
+        <option value="american">🇺🇸 American English</option>
+        <option value="british">🇬🇧 British English</option>
+        <option value="australian">🇦🇺 Australian English</option>
+      </select>
+
+    </div>
+
+    <textarea
+      id="inputText"
+      placeholder="Enter text..."
+    ></textarea>
+
+    <button id="translateBtn">
+      Translate
+    </button>
+
+    <textarea
+      id="outputText"
+      readonly
+      placeholder="Translation..."
+    ></textarea>
+
+    <div class="info-block">
+      <h3>Semantic Translation</h3>
+      <p>
+        Supports idioms, semantic understanding
+        and regional English variants.
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
