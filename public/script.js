@@ -287,9 +287,34 @@ const idiomsRU_EN = {
 }
 
 };
-// =====================
-// ИДИОМЫ СНАЧАЛА
-// =====================
+// =======================
+// 2. UK / US СТИЛЬ
+// =======================
+
+const uk_us_map = {
+
+"colour": "color",
+"favourite": "favorite",
+"centre": "center",
+"flat": "apartment",
+"lift": "elevator",
+"lorry": "truck",
+"holiday": "vacation",
+"chips": "fries",
+"biscuit": "cookie",
+"queue": "line",
+"petrol": "gas"
+
+};
+
+const us_uk_map = Object.fromEntries(
+  Object.entries(uk_us_map).map(([k,v]) => [v,k])
+);
+
+
+// =======================
+// 3. ИДИОМЫ
+// =======================
 
 function findIdiom(text, style){
 
@@ -305,108 +330,88 @@ function findIdiom(text, style){
 }
 
 
-const variants = {
+// =======================
+// 4. СТИЛЬ (UK/US)
+// =======================
 
-  british: {
-    apartment: "flat",
-    truck: "lorry",
-    fries: "chips",
-    vacation: "holiday",
-    elevator: "lift",
-    subway: "underground"
-  },
+function applyStyle(text, style){
 
-  australian: {
-    friend: "mate",
-    barbecue: "barbie",
-    afternoon: "arvo"
-  }
+  let result = text.toLowerCase();
 
-};
-
-document
-  .getElementById("translateBtn")
-  .addEventListener("click", translateText);
-
-async function translateText() {
-
-  const input = document
-    .getElementById("inputText")
-    .value
-    .trim();
-
-  const output = document
-    .getElementById("outputText");
-
-  const direction = document
-    .getElementById("direction")
-    .value;
-
-  const variant = document
-    .getElementById("englishVariant")
-    .value;
-
-  if(!input){
-    output.value = "Enter text...";
-    return;
-  }
-
-  const lower = input.toLowerCase();
-
-  // 🔥 Проверка идиом
-  if(idioms[lower]){
-    output.value = idioms[lower];
-    return;
-  }
-
-  let from = "ru";
-  let to = "en";
-
-  if(direction === "en-ru"){
-    from = "en";
-    to = "ru";
-  }
-
-  try{
-
-    const response = await fetch("/translate",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        text:input,
-        from,
-        to
-      })
-    });
-
-    const data = await response.json();
-
-    let translated = data.translated;
-
-    // 🔥 English variants adaptation
-    if(to === "en"){
-
-      if(variants[variant]){
-
-        for(let word in variants[variant]){
-
-          const regex = new RegExp(`\\b${word}\\b`,"gi");
-
-          translated = translated.replace(
-            regex,
-            variants[variant][word]
-          );
-        }
-      }
+  if(style === "uk"){
+    for(let us in us_uk_map){
+      result = result.replaceAll(us, us_uk_map[us]);
     }
-
-    output.value = translated;
-
-  }catch(error){
-
-    output.value = "Translation error";
-
   }
+
+  if(style === "us"){
+    for(let uk in uk_us_map){
+      result = result.replaceAll(uk, uk_us_map[uk]);
+    }
+  }
+
+  return result;
+}
+
+
+// =======================
+// 5. ГЛОБАЛЬНЫЙ ПЕРЕВОД (БЕСПЛАТНЫЙ API)
+// =======================
+
+async function translateGlobal(text, direction){
+
+  let source = direction === "ru-en" ? "ru" : "en";
+  let target = direction === "ru-en" ? "en" : "ru";
+
+  try {
+
+    const res = await fetch("https://api.mymemory.translated.net/get?q=" +
+      encodeURIComponent(text) +
+      "&langpair=" + source + "|" + target
+    );
+
+    const data = await res.json();
+
+    return data.responseData.translatedText;
+
+  } catch (e) {
+    return text; // fallback
+  }
+}
+
+
+// =======================
+// 6. ГЛАВНАЯ ФУНКЦИЯ
+// =======================
+
+async function translateText(){
+
+  const input = document.getElementById("input").value;
+  const output = document.getElementById("output");
+  const direction = document.getElementById("direction").value;
+  const style = document.getElementById("style").value;
+
+  if(!input.trim()){
+    output.value = "";
+    return;
+  }
+
+  output.value = "Translating...";
+
+  // 1. ИДИОМЫ
+  const idiom = findIdiom(input, style);
+
+  if(idiom){
+    output.value = idiom;
+    return;
+  }
+
+  // 2. ГЛОБАЛЬНЫЙ ПЕРЕВОД
+  let result = await translateGlobal(input, direction);
+
+  // 3. UK/US СТИЛЬ
+  result = applyStyle(result, style);
+
+  output.value = result;
+
 }
