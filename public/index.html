@@ -28,37 +28,27 @@
         <option value="en-ru">English → Russian</option>
       </select>
 
-      <!-- стиль английского (UK / US) -->
+      <!-- стиль английского -->
       <select id="style">
         <option value="uk">🇬🇧 British English</option>
         <option value="us">🇺🇸 American English</option>
-        <option value="simple">Simple meaning</option>
       </select>
 
     </div>
 
     <!-- ввод -->
-    <textarea
-      id="input"
-      placeholder="Enter text..."
-    ></textarea>
+    <textarea id="input" placeholder="Enter text..."></textarea>
 
     <!-- кнопка -->
-    <button onclick="translateText()">
-      Translate
-    </button>
+    <button onclick="translateText()">Translate</button>
 
     <!-- вывод -->
-    <textarea
-      id="output"
-      readonly
-      placeholder="Translation..."
-    ></textarea>
+    <textarea id="output" readonly placeholder="Translation..."></textarea>
 
     <div class="info-block">
       <h3>Semantic Translation Engine</h3>
       <p>
-        Supports idioms, semantic interpretation and UK/US style switching.
+        Supports idioms with UK/US variants and semantic translation.
       </p>
     </div>
 
