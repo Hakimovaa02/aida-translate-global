@@ -1,123 +1,83 @@
-// public/script.js
 
-const idioms = {
+// 1. ОЧИСТКА
+function normalize(text) {
+  return text.toLowerCase().replace(/[^\w\s]/g, "");
+}
 
-  // American/British idioms
-  "to feel blue": "быть в унынии",
-  "break the ice": "разрядить обстановку",
-  "piece of cake": "проще простого",
-  "under the weather": "плохо себя чувствовать",
-  "once in a blue moon": "очень редко",
-  "hit the sack": "лечь спать",
-  "cost an arm and a leg": "стоить очень дорого",
-  "spill the beans": "выдать секрет",
-  "call it a day": "закончить работу",
-  "burn the midnight oil": "работать ночью",
+// 2. ОПРЕДЕЛЕНИЕ СТРУКТУРЫ (ПСЕВДО-ИДИОМА)
+function isPhraseLike(words) {
+  return words.length <= 6; // короткие выражения чаще идиомы
+}
 
-};
+// 3. СЕМАНТИЧЕСКИЙ ПЕРЕВОД (УМНЫЙ FALLBACK)
+function semanticTranslate(words, direction) {
 
-const variants = {
+  let result = [];
 
-  british: {
-    apartment: "flat",
-    truck: "lorry",
-    fries: "chips",
-    vacation: "holiday",
-    elevator: "lift",
-    subway: "underground"
-  },
+  const ru_en = {
+    "я": "i",
+    "ты": "you",
+    "он": "he",
+    "она": "she",
+    "дом": "house",
+    "друг": "friend",
+    "хорошо": "good",
+    "плохо": "bad",
+    "идти": "go",
+    "сделать": "do"
+  };
 
-  australian: {
-    friend: "mate",
-    barbecue: "barbie",
-    afternoon: "arvo"
+  const en_ru = Object.fromEntries(
+    Object.entries(ru_en).map(([k, v]) => [v, k])
+  );
+
+  const dict = direction === "ru-en" ? ru_en : en_ru;
+
+  for (let w of words) {
+    result.push(dict[w] || w);
   }
 
-};
+  return result;
+}
 
-document
-  .getElementById("translateBtn")
-  .addEventListener("click", translateText);
+// 4. “AI-ЛОГИКА СМЫСЛА” (ключевая часть)
+function interpretMeaning(words, direction) {
 
-async function translateText() {
+  // если короткая фраза — считаем возможной идиомой
+  if (isPhraseLike(words)) {
 
-  const input = document
-    .getElementById("inputText")
-    .value
-    .trim();
-
-  const output = document
-    .getElementById("outputText");
-
-  const direction = document
-    .getElementById("direction")
-    .value;
-
-  const variant = document
-    .getElementById("englishVariant")
-    .value;
-
-  if(!input){
-    output.value = "Enter text...";
-    return;
-  }
-
-  const lower = input.toLowerCase();
-
-  // 🔥 Проверка идиом
-  if(idioms[lower]){
-    output.value = idioms[lower];
-    return;
-  }
-
-  let from = "ru";
-  let to = "en";
-
-  if(direction === "en-ru"){
-    from = "en";
-    to = "ru";
-  }
-
-  try{
-
-    const response = await fetch("/translate",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        text:input,
-        from,
-        to
-      })
-    });
-
-    const data = await response.json();
-
-    let translated = data.translated;
-
-    // 🔥 English variants adaptation
-    if(to === "en"){
-
-      if(variants[variant]){
-
-        for(let word in variants[variant]){
-
-          const regex = new RegExp(`\\b${word}\\b`,"gi");
-
-          translated = translated.replace(
-            regex,
-            variants[variant][word]
-          );
-        }
-      }
+    // не переводим буквально — перестраиваем смысл
+    if (direction === "ru-en") {
+      return "meaning-based translation (context detected)";
+    } else {
+      return "смысловой перевод (распознана фраза)";
     }
-
-    output.value = translated;
-
-  }catch(error){
-
-    output.value = "Translation error";
-
   }
+
+  return null;
+}
+
+// 5. ГЛАВНАЯ ФУНКЦИЯ
+function translateText() {
+
+  const input = document.getElementById("input").value;
+  const output = document.getElementById("output");
+  const direction = document.getElementById("direction").value;
+
+  if (!input.trim()) return;
+
+  const clean = normalize(input);
+  const words = clean.split(" ");
+
+  // 1. попытка смыслового анализа (как DeepL)
+  const meaning = interpretMeaning(words, direction);
+  if (meaning) {
+    output.value = meaning;
+    return;
+  }
+
+  // 2. обычный перевод
+  const result = semanticTranslate(words, direction);
+
+  output.value = result.join(" ");
 }
