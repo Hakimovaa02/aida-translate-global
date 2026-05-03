@@ -287,3 +287,77 @@ const idiomsRU_EN = {
 }
 
 };
+// =========================
+// 4. ПОИСК ИДИОМ
+// =========================
+
+function findIdiom(text, style){
+
+  const t = clean(text);
+
+  for(let key in idiomsRU_EN){
+
+    if(t.includes(key)){
+
+      const val = idiomsRU_EN[key];
+
+      if(typeof val === "object"){
+        return val[style] || val.uk;
+      }
+
+      return val;
+    }
+
+  }
+
+  return null;
+}
+
+
+// =========================
+// 5. ПЕРЕВОД СЛОВ
+// =========================
+
+function translateWords(text, direction){
+
+  const words = clean(text).split(" ");
+
+  const dict = direction === "ru-en" ? dictRU_EN : dictEN_RU;
+
+  return words.map(w => dict[w] || w).join(" ");
+}
+
+
+// =========================
+// 6. ГЛАВНАЯ ФУНКЦИЯ
+// =========================
+
+function translateText(){
+
+  const input = document.getElementById("input").value;
+  const output = document.getElementById("output");
+
+  const direction = document.getElementById("direction").value;
+  const style = document.getElementById("style").value;
+
+  if(!input.trim()){
+    output.value = "";
+    return;
+  }
+
+  console.log("Translate started:", input);
+
+  // 1. проверка идиом
+  const idiom = findIdiom(input, style);
+
+  if(idiom){
+    output.value = idiom;
+    return;
+  }
+
+  // 2. обычный перевод
+  const result = translateWords(input, direction);
+
+  output.value = result;
+
+}
