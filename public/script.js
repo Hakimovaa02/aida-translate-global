@@ -305,66 +305,108 @@ function findIdiom(text, style){
 }
 
 
-// =====================
-// БЕСПЛАТНЫЙ ПЕРЕВОДЧИК (ВСЕ СЛОВА МИРА)
-// =====================
-// LibreTranslate public API
+const variants = {
 
-async function translateGlobal(text, direction){
+  british: {
+    apartment: "flat",
+    truck: "lorry",
+    fries: "chips",
+    vacation: "holiday",
+    elevator: "lift",
+    subway: "underground"
+  },
 
-  let source = direction === "ru-en" ? "ru" : "en";
-  let target = direction === "ru-en" ? "en" : "ru";
-
-  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-  if(data?.responseData?.translatedText){
-    return data.responseData.translatedText;
+  australian: {
+    friend: "mate",
+    barbecue: "barbie",
+    afternoon: "arvo"
   }
 
-  throw new Error("No translation result");
-}
+};
 
+document
+  .getElementById("translateBtn")
+  .addEventListener("click", translateText);
 
-// =====================
-// ГЛАВНАЯ ФУНКЦИЯ
-// =====================
+async function translateText() {
 
-async function translateText(){
+  const input = document
+    .getElementById("inputText")
+    .value
+    .trim();
 
-  const input = document.getElementById("input").value;
-  const output = document.getElementById("output");
-  const style = document.getElementById("style").value;
-  const direction = document.getElementById("direction").value;
+  const output = document
+    .getElementById("outputText");
 
-  if(!input.trim()){
-    output.value = "";
+  const direction = document
+    .getElementById("direction")
+    .value;
+
+  const variant = document
+    .getElementById("englishVariant")
+    .value;
+
+  if(!input){
+    output.value = "Enter text...";
     return;
   }
 
-  // 1. ИДИОМЫ (ПРИОРИТЕТ)
-  const idiom = findIdiom(input, style);
+  const lower = input.toLowerCase();
 
-  if(idiom){
-    output.value = idiom;
+  // 🔥 Проверка идиом
+  if(idioms[lower]){
+    output.value = idioms[lower];
     return;
   }
 
-  // 2. ВСЕ ОСТАЛЬНОЕ (ЛЮБЫЕ СЛОВА В МИРЕ)
-  try {
+  let from = "ru";
+  let to = "en";
 
-    output.value = "Translating...";
-
-    const result = await translateGlobal(input, direction);
-
-    output.value = result;
-
-  } catch (e) {
-
-    console.log(e);
-    output.value = "Translation error (API unavailable)";
+  if(direction === "en-ru"){
+    from = "en";
+    to = "ru";
   }
 
+  try{
+
+    const response = await fetch("/translate",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        text:input,
+        from,
+        to
+      })
+    });
+
+    const data = await response.json();
+
+    let translated = data.translated;
+
+    // 🔥 English variants adaptation
+    if(to === "en"){
+
+      if(variants[variant]){
+
+        for(let word in variants[variant]){
+
+          const regex = new RegExp(`\\b${word}\\b`,"gi");
+
+          translated = translated.replace(
+            regex,
+            variants[variant][word]
+          );
+        }
+      }
+    }
+
+    output.value = translated;
+
+  }catch(error){
+
+    output.value = "Translation error";
+
+  }
 }
