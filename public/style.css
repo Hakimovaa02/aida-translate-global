@@ -10,8 +10,8 @@ body{
   font-family:Arial, sans-serif;
   min-height:100vh;
   overflow:hidden;
-  background:#0f172a;
-  color:white;
+  background:#faf0e6;
+  color:#5c4b3a;
 }
 
 .background{
@@ -19,9 +19,9 @@ body{
   width:100%;
   height:100%;
   background:
-    radial-gradient(circle at top left,#2563eb,transparent 40%),
-    radial-gradient(circle at bottom right,#7c3aed,transparent 40%),
-    #0f172a;
+    radial-gradient(circle at top left,#fbc0cb,transparent 40%),
+    radial-gradient(circle at bottom right,#f5e6d3,transparent 40%),
+    #faf0e6;
   z-index:-1;
 }
 
@@ -44,22 +44,23 @@ body{
   font-size:48px;
   font-weight:700;
   margin-bottom:10px;
+  color:#d4838a;
 }
 
 .developer{
-  color:#cbd5e1;
+  color:#b8957a;
   font-size:18px;
 }
 
 .translator-card{
   width:100%;
   max-width:850px;
-  background:rgba(255,255,255,0.08);
+  background:rgba(255,245,235,0.85);
   backdrop-filter:blur(15px);
-  border:1px solid rgba(255,255,255,0.15);
+  border:1px solid rgba(255,220,200,0.5);
   border-radius:25px;
   padding:25px;
-  box-shadow:0 0 30px rgba(0,0,0,0.35);
+  box-shadow:0 0 30px rgba(0,0,0,0.08);
 }
 
 .top-controls{
@@ -73,9 +74,10 @@ select{
   padding:12px;
   border:none;
   border-radius:12px;
-  background:#1e293b;
-  color:white;
+  background:#fff5ee;
+  color:#5c4b3a;
   font-size:15px;
+  border:1px solid #f5d5cc;
 }
 
 textarea{
@@ -87,12 +89,13 @@ textarea{
   font-size:18px;
   resize:none;
   margin-bottom:20px;
-  background:#111827;
-  color:white;
+  background:#fffaf5;
+  color:#4a3727;
+  border:1px solid #f5d5cc;
 }
 
 textarea::placeholder{
-  color:#94a3b8;
+  color:#d4bca8;
 }
 
 button{
@@ -103,28 +106,30 @@ button{
   font-size:18px;
   font-weight:bold;
   cursor:pointer;
-  background:linear-gradient(90deg,#2563eb,#7c3aed);
-  color:white;
+  background:linear-gradient(90deg,#f0c0c8,#e8d5c4);
+  color:#8b5e5e;
   transition:0.3s;
   margin-bottom:20px;
 }
 
 button:hover{
   transform:scale(1.02);
+  background:linear-gradient(90deg,#e8b0ba,#dfc5b0);
 }
 
 .info-block{
-  background:rgba(255,255,255,0.05);
+  background:rgba(255,245,235,0.7);
   border-radius:16px;
   padding:15px;
+  border:1px solid #f5d5cc;
 }
 
 .info-block h3{
   margin-bottom:8px;
-  color:#93c5fd;
+  color:#d4838a;
 }
 
 .info-block p{
-  color:#cbd5e1;
+  color:#a0846e;
   line-height:1.5;
 }
